@@ -1,51 +1,46 @@
 #include <stdio.h>
+#include <stdlib.h>
 #include <math.h>
 #include <stdbool.h>
-#define max 5000
 
-int rep = 0;
-int k[max] = {0};
+#define MAX_SIZE 10000 // Define a maximum size for the array
 
-int is_pow2(unsigned int x){
-    if (x == 0) {
-        return 0;
-    }
-    return (x & (x - 1)) == 0;
+// Function to check if a number is a power of 2
+bool is_pow2(unsigned int x) {
+    return x && !(x & (x - 1));
 }
 
-int frozen() {
-    for(int i=0;i<max;i++){
-        if(is_pow2(k[i]))
-            printf("%d, ",(int)log2(k[i]));
-        if(is_pow2(k[i]))
-            printf("%d, ",(int)k[i]);
-    }
-}
+// Function to generate the sequence
+void generate_sequence(double n, int* k, int* count) {
+    static const int c[] = {17, 78, 19, 23, 29, 77, 95, 77, 1, 11, 13, 15, 1, 55};
+    static const int m[] = {91, 85, 51, 38, 33, 29, 23, 19, 17, 13, 11, 2, 7, 1}; 
 
-int primegame(double n) {
-    int c[] = {17,78,19,23,29,77,95,77,1,11,13,15,1,55};
-    int m[] = {91,85,51,38,33,29,23,19,17,13,11,2,7,1};
-    int x=0;
-    double tmp=0;
-    for(int i=0;i<14;i++){
-        if(rep>max) return 0;
-        tmp = n*c[i]/m[i];
-        if(tmp==(int)tmp){
-            n = tmp;
-            k[rep]=n;
-            rep++;
-            primegame(n);
-        }else{
-            x++;
-            if(x==13) return 0;
+    for (int i = 0; i < 14 && *count < MAX_SIZE; i++) { // Combined loop condition
+        double tmp = n * (double)c[i] / m[i]; 
+        if (tmp == (int)tmp) {
+            k[*count] = (int)tmp;
+            (*count)++;
+            generate_sequence(tmp, k, count);
         }
     }
 }
 
 int main() {
     double n = 2;
-    printf("%d,",(int)n);
-    primegame(n);
-    frozen();
+    int k[MAX_SIZE];
+    int count = 0;
+
+    k[count++] = n;
+    generate_sequence(n, k, &count); 
+
+    // Find and print powers of 2 in the sequence
+    printf("Powers of 2:\n");
+    for (int i = 0; i < count; i++) {
+        if (is_pow2(k[i])) {
+            printf("%d, ", (int)log2(k[i]));
+        }
+    }
+    printf("\n");
+
     return 0;
 }
